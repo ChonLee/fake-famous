@@ -1,0 +1,19 @@
+{
+  "playerName": "Dan",
+  "nicknames": ["Daniel", "Dan The Man"],
+  "channelName": "Dan The Man's MCO Live",
+  "description": "MCO Plane Spotting ✈️ | B-Side Long Term Parking | Runway 17R/35L",
+  "icon": "✈️",
+  "tickerLabel": "✈ MCO OPS",
+  "reactions": ["✈️","🛫","🛬","❤️","🔥","👏","😍","🙌","💛","✈️","✈️","🛩️","🏆"],
+  "airport": "MCO",
+  "runway": "17R/35L",
+  "arrivalRunway": "17R",
+  "departureRunway": "35L",
+  "viewerLocation": "B-Side Long Term Parking",
+  "subCount": 128000,
+  "likeCount": 14700,
+  "viewerCount": 2341,
+  "chatMinDelay": 3000,
+  "chatMaxDelay": 9000
+}

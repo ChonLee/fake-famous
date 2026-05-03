@@ -1,0 +1,17 @@
+{
+  "playerName": "LegoEaston",
+  "nicknames": ["Easton"],
+  "channelName": "LegoEaston's BeamNG Live",
+  "description": "BeamNG Drive — Crash Testing & Stunts 🚗",
+  "icon": "🚗",
+  "tickerLabel": "💥 BEAMNG",
+  "reactions": ["🚗","💥","🔥","😱","❤️","👏","🏎️","💨","💥","🚗","😂","🔥"],
+  "game": "BeamNG Drive",
+  "vehicle": "Pessima",
+  "map": "Utah",
+  "subCount": 45200,
+  "likeCount": 8300,
+  "viewerCount": 1847,
+  "chatMinDelay": 2000,
+  "chatMaxDelay": 6000
+}

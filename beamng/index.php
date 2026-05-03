@@ -63,6 +63,7 @@
   }
   html, body { height: 100%; }
   body { background: var(--dark); color: var(--text); font-family: 'Roboto', sans-serif; height: 100%; display: flex; flex-direction: column; }
+  @media (max-width: 899px) { html, body { height: auto; min-height: 100%; } }
 
   .topbar {
     background: #212121; padding: 10px 16px;
@@ -78,6 +79,7 @@
   }
 
   .main { display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; }
+  @media (max-width: 899px) { .main { overflow: visible; } }
   @media (min-width: 900px) {
     .main { flex-direction: row; }
     .video-section { flex: 1; overflow-y: auto; }

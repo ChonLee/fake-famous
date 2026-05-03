@@ -600,11 +600,22 @@ function handleChatKey(e) { if (e.key === 'Enter') sendOwnMessage(); }
 // ── MOBILE CHAT HEIGHT ───────────────────────────────────────────────────────
 function updateMobileChatHeight() {
   if (window.innerWidth >= 900) return;
-  const chat = document.querySelector('.chat-section');
-  if (!chat) return;
-  const maxH = Math.round(window.innerHeight * 0.78);
-  const minH = 300;
-  const chatTop = chat.getBoundingClientRect().top;
+  const chat   = document.querySelector('.chat-section');
+  const video  = document.querySelector('.video-wrapper');
+  const topbar = document.querySelector('.topbar');
+  if (!chat || !video) return;
+
+  const minH        = 300;
+  const topbarH     = topbar ? topbar.getBoundingClientRect().height : 54;
+  const videoBottom = video.getBoundingClientRect().bottom;
+  const chatTop     = chat.getBoundingClientRect().top;
+
+  // Project where chatTop will be when the video just clears the topbar —
+  // that's the natural max: stop growing the moment the video exits.
+  const scrollToExit  = Math.max(0, videoBottom - topbarH);
+  const chatTopAtExit = chatTop - scrollToExit;
+  const maxH = window.innerHeight - Math.max(chatTopAtExit, topbarH);
+
   const fill = window.innerHeight - Math.max(chatTop, 0);
   chat.style.height = Math.max(minH, Math.min(maxH, fill)) + 'px';
 }

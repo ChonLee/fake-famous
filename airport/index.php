@@ -522,7 +522,10 @@ function startChat() {
 
   function next() {
     const minD = config.chatMinDelay ?? 800;
-    const delay = minD + Math.random() * ((config.chatMaxDelay ?? 2800) - minD);
+    const maxD = config.chatMaxDelay ?? 2800;
+    const r1 = Math.random(), r2 = Math.random();
+    const t  = Math.random() < 0.5 ? Math.min(r1, r2) : Math.max(r1, r2);
+    const delay = minD + t * (maxD - minD);
     setTimeout(() => {
       const r = Math.random();
       const user = ri(MESSAGES.usernames);

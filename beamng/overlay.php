@@ -26,13 +26,18 @@
   }
 
   .chat-messages {
+    flex: 1;
+    min-height: 0;
     display: flex;
     flex-direction: column;
     gap: 4px;
     padding: 12px 10px;
-    overflow: hidden;
-    max-height: 100vh;
+    overflow-y: scroll;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
   }
+  .chat-messages::-webkit-scrollbar { display: none; }
 
   .chat-msg {
     display: flex;
@@ -123,6 +128,7 @@ function addMsg(username, text, isSC=false, amount=null, isMod=false) {
 
   container.appendChild(el);
   while (container.children.length > 80) container.removeChild(container.firstChild);
+  container.scrollTop = container.scrollHeight;
 }
 
 function pickMsg() {

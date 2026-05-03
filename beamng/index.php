@@ -597,10 +597,25 @@ function sendOwnMessage() {
 }
 function handleChatKey(e) { if (e.key === 'Enter') sendOwnMessage(); }
 
+// ── MOBILE CHAT HEIGHT ───────────────────────────────────────────────────────
+function updateMobileChatHeight() {
+  if (window.innerWidth >= 900) return;
+  const chat = document.querySelector('.chat-section');
+  if (!chat) return;
+  const maxH = Math.round(window.innerHeight * 0.78);
+  const minH = 300;
+  const chatTop = chat.getBoundingClientRect().top;
+  const fill = window.innerHeight - Math.max(chatTop, 0);
+  chat.style.height = Math.max(minH, Math.min(maxH, fill)) + 'px';
+}
+window.addEventListener('scroll', updateMobileChatHeight, { passive: true });
+window.addEventListener('resize', updateMobileChatHeight);
+
 // ── BOOT ─────────────────────────────────────────────────────────────────────
 window.addEventListener('load', async () => {
   await loadData();
   applyConfig();
+  updateMobileChatHeight();
   startTicker();
   startChat();
   startViewerTick();

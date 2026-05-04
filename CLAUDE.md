@@ -165,11 +165,14 @@ Higher weight = more frequent appearances. Global — same people appear in all 
 
 ## Chat Message Counts
 
-**Airport**: ~320 unique messages (150 generic, 130 aviation, 40 superchat).
-At 9s/message over 2 hours (~800 messages fired) → ~2.5x repeat rate.
+**Airport**: ~344 unique messages (174 generic incl. 24 emoji-only, 130 aviation, 40 superchat).
+At 9s/message over 2 hours (~800 messages fired) → ~2.3x repeat rate.
 
-**BeamNG**: ~308 unique messages (154 generic, 119 game-specific, 35 superchat).
-At 4s/message over 2 hours (~1800 messages fired) → ~5x repeat rate. Faster chat, shorter messages, acceptable.
+**BeamNG**: ~333 unique messages (179 generic incl. 25 emoji-only, 119 game-specific, 35 superchat).
+At 4s/message over 2 hours (~1800 messages fired) → ~5.4x repeat rate.
+
+Chat timing uses bimodal distribution — 50% min-of-2 randoms (burst), 50% max-of-2 (lull).
+Average is preserved exactly at `(chatMinDelay + chatMaxDelay) / 2`.
 
 ---
 
@@ -216,12 +219,30 @@ ssh -i ~/.ssh/id_ed25519 root@192.168.7.110 "cd /mnt/user/appdata/swag/www/fake-
 
 ---
 
+## Mobile Layout (< 900px)
+
+- Page scrolls vertically on mobile — video on top, chat below
+- Chat section height is dynamic: grows as video scrolls off screen, caps the moment video exits viewport
+- `updateMobileChatHeight()` runs on scroll/resize and on boot — do not remove
+- Internal `.chat-messages` scroll still works within the capped height
+
+## Camera
+
+- `startCamera()` tries saved `localStorage['ff_cameraId']` first, falls back to rear-facing, then any camera
+- After camera starts, enumerates devices: 2+ → shows 🔄 Flip button; 3+ → also shows 📷 Switch picker
+- Flip uses `facingMode` toggle (reliable on iOS Safari); falls back to deviceId cycling on desktop
+- OBS Virtual Camera appears as a regular camera device — Start Virtual Camera in OBS, then click Show Camera
+- DB must be owned by uid=99 (PHP-FPM user) for SQLite WAL writes: `chown 99:100 db/ db/fake-famous.db*`
+
 ## Things to Watch Out For
 
 - `scroll-behavior: smooth` + `overflow-y: scroll` + `min-height: 0` on `.chat-messages` are all required — do not remove any of them
 - Do NOT add `overflow: hidden` to `.chat-section` — breaks chat scroll
+- Do NOT add `overflow: hidden` to `.main` on mobile — breaks page scroll to chat
 - Camera only works in Safari on iOS
 - Placeholder substitution is PHP-side only — no `fill()` function exists in the JS
 - The shared DB lives at `db/fake-famous.db` (root level), not inside each stream folder
+- `init.php` is gitignored (`*/init.php`) — deploy manually, run once, delete from server
 - `init.php` path for the DB: `dirname(__DIR__) . '/db/fake-famous.db'`
 - `api/messages.php` path for the DB: `dirname(dirname(__DIR__)) . '/db/fake-famous.db'`
+- airport/index.php and beamng/index.php are identical templates — always copy one to the other after changes

@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-A fake YouTube livestream PWA for kids. Each "stream" is a themed experience — currently just **airport** (Dan's plane-spotting at MCO), with hotwheels, baseball, bowling etc. planned. All streams share one SQLite database and a common frontend template.
+A fake YouTube livestream PWA for kids. Each "stream" is a themed experience — **airport** (Dan's plane-spotting at MCO), **beamng** and **acc** (LegoEaston's driving/racing streams), with hotwheels, baseball, bowling etc. planned. All streams share one SQLite database and a common frontend template.
 
 The app simulates a real YouTube live stream with:
 - A live camera feed (rear camera preferred)
@@ -30,13 +30,20 @@ fake-famous/
 │   ├── init.php            Run once to seed DB — delete after use
 │   └── api/
 │       └── messages.php    Returns substituted messages as JSON
-└── beamng/                 LegoEaston — BeamNG Drive
+├── beamng/                 LegoEaston — BeamNG Drive
+│   ├── index.php           Stream frontend (same generic template as airport)
+│   ├── overlay.php         OBS Browser Source overlay — transparent chat only, no controls
+│   ├── config.json         Stream identity + BeamNG fields: game, vehicle, map
+│   ├── init.php            Run once to seed DB — delete after use
+│   └── api/
+│       └── messages.php    BeamNG substitutions: {game} {vehicle} {map}
+└── acc/                    LegoEaston — Assetto Corsa Competizione (GT3 sim racing)
     ├── index.php           Stream frontend (same generic template as airport)
     ├── overlay.php         OBS Browser Source overlay — transparent chat only, no controls
-    ├── config.json         Stream identity + BeamNG fields: game, vehicle, map
+    ├── config.json         Stream identity + ACC fields: game, car, track, series
     ├── init.php            Run once to seed DB — delete after use
     └── api/
-        └── messages.php    BeamNG substitutions: {game} {vehicle} {map}
+        └── messages.php    ACC substitutions: {game} {car} {track} {series}
 ```
 
 Adding a new stream = new folder with `config.json`, `index.php`, `api/messages.php`, `init.php`.
@@ -106,6 +113,7 @@ All streams share these base fields:
 
 Stream-specific extra fields (airport): `airport`, `runway`, `arrivalRunway`, `departureRunway`, `viewerLocation`
 Stream-specific extra fields (beamng): `game`, `vehicle`, `map`
+Stream-specific extra fields (acc): `game`, `car`, `track`, `series`
 
 ---
 
@@ -136,6 +144,18 @@ Substitution happens **server-side in PHP** (`api/messages.php`) before JSON is 
 | `{game}`       | game                    |
 | `{vehicle}`    | vehicle                 |
 | `{map}`        | map                     |
+
+**ACC** (`acc/api/messages.php`):
+
+| Placeholder    | Value from config       |
+|---|---|
+| `{player}`     | playerName (random from playerName + nicknames) |
+| `{channel}`    | channelName             |
+| `{city}`       | Random city from DB     |
+| `{game}`       | game                    |
+| `{car}`        | car                     |
+| `{track}`      | track                   |
+| `{series}`     | series                  |
 
 ---
 
@@ -171,16 +191,19 @@ At 9s/message over 2 hours (~800 messages fired) → ~2.3x repeat rate.
 **BeamNG**: ~333 unique messages (179 generic incl. 25 emoji-only, 119 game-specific, 35 superchat).
 At 4s/message over 2 hours (~1800 messages fired) → ~5.4x repeat rate.
 
+**ACC**: 359 unique messages (182 generic incl. 25 emoji-only, 142 sim-racing, 35 superchat).
+At 4.75s/message over 2 hours (~1500 messages fired) → ~4.2x repeat rate.
+
 Chat timing uses bimodal distribution — 50% min-of-2 randoms (burst), 50% max-of-2 (lull).
 Average is preserved exactly at `(chatMinDelay + chatMaxDelay) / 2`.
 
 ---
 
-## OBS Browser Source Overlay (BeamNG)
+## OBS Browser Source Overlay (BeamNG + ACC)
 
-`beamng/overlay.php` is a transparent chat-only overlay for OBS:
+`beamng/overlay.php` and `acc/overlay.php` are transparent chat-only overlays for OBS:
 
-- In OBS: Add **Browser Source** → URL pointing to `https://yourserver/fake-famous/beamng/overlay.php`
+- In OBS: Add **Browser Source** → URL pointing to `https://yourserver/fake-famous/{stream}/overlay.php`
 - Set width to **380**, height to **1080** (or match stream resolution height)
 - Check **"Allow transparency"** in the Browser Source settings
 - Position it in the bottom-right corner of the game capture
@@ -245,4 +268,4 @@ ssh -i ~/.ssh/id_ed25519 root@192.168.7.110 "cd /mnt/user/appdata/swag/www/fake-
 - `init.php` is gitignored (`*/init.php`) — deploy manually, run once, delete from server
 - `init.php` path for the DB: `dirname(__DIR__) . '/db/fake-famous.db'`
 - `api/messages.php` path for the DB: `dirname(dirname(__DIR__)) . '/db/fake-famous.db'`
-- airport/index.php and beamng/index.php are identical templates — always copy one to the other after changes
+- airport/index.php, beamng/index.php and acc/index.php are identical templates — always copy changes to all three

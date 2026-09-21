@@ -1,0 +1,18 @@
+{
+  "playerName": "LegoEaston",
+  "nicknames": ["Easton", "Lego"],
+  "channelName": "LegoEaston Sim Racing",
+  "description": "Assetto Corsa Competizione — GT3 Racing 🏁 | Spa-Francorchamps",
+  "icon": "🏎️",
+  "tickerLabel": "🏁 ACC LIVE",
+  "reactions": ["🏎️","🏁","🔥","❤️","👏","💨","🏎️","🔥","🏁","😱","🏆","🏎️"],
+  "game": "Assetto Corsa Competizione",
+  "car": "Ferrari 296 GT3",
+  "track": "Spa-Francorchamps",
+  "series": "GT World Challenge",
+  "subCount": 52400,
+  "likeCount": 9600,
+  "viewerCount": 2108,
+  "chatMinDelay": 2500,
+  "chatMaxDelay": 7000
+}

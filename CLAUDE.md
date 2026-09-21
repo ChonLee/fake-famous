@@ -65,6 +65,12 @@ location /db {
 }
 ```
 
+**Status (2026-09-21): this rule is NOT currently applied on the unraid box** —
+`/fake-famous/db/fake-famous.db` returns 200 and serves the file. Deliberately left
+as-is: the DB holds only invented chat content, and `api/messages.php` already
+publishes the same data to any browser. See the `characters` note under
+"Things to Watch Out For" for the case where this would start to matter.
+
 ---
 
 ## Database Schema
@@ -240,6 +246,24 @@ When the user says **"update server"** or **"update the server"**, run:
 ssh -i ~/.ssh/id_ed25519 root@192.168.7.110 "cd /mnt/user/appdata/swag/www/fake-famous && git pull"
 ```
 
+Deploy gotchas learned the hard way:
+
+- `git pull` creates new files as **root:root**; the rest of the tree is `99:100`.
+  Always follow a pull that adds a stream folder with
+  `chown -R 99:100 <newstream>`
+- The server repo needs `git config --global --add safe.directory /mnt/user/appdata/swag/www/fake-famous`
+  or git refuses with "dubious ownership" (already applied for root)
+- `init.php` is gitignored, so a pull never delivers it — `scp` it over separately,
+  run it, then delete it
+- Back up before seeding: `cp db/fake-famous.db db/fake-famous.db.bak-<tag>`
+
+There is no PHP in the WSL dev environment. To syntax-check or actually run
+anything, use the swag container on unraid:
+
+```bash
+ssh -i ~/.ssh/id_ed25519 root@192.168.7.110 "docker exec -i swag php -l" < somefile.php
+```
+
 ---
 
 ## Mobile Layout (< 900px)
@@ -269,3 +293,10 @@ ssh -i ~/.ssh/id_ed25519 root@192.168.7.110 "cd /mnt/user/appdata/swag/www/fake-
 - `init.php` path for the DB: `dirname(__DIR__) . '/db/fake-famous.db'`
 - `api/messages.php` path for the DB: `dirname(dirname(__DIR__)) . '/db/fake-famous.db'`
 - airport/index.php, beamng/index.php and acc/index.php are identical templates — always copy changes to all three
+- The `characters` table is **published to the public API** — `api/messages.php` merges
+  those names into the `usernames` array the browser downloads. If real friends/family
+  names ever go in there, they are world-readable to anyone who can reach the site.
+  Use nicknames. An nginx `deny` on /db would NOT prevent this.
+- Every `$openers` entry needs an explicit third element (`false` for non-mods) — the
+  insert loop destructures `[$user, $text, $isMod]` and PHP warns `Undefined array key 2`
+  otherwise. **`beamng/init.php` still has this bug** (harmless, already seeded)
